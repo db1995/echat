@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/soda.css" rel="stylesheet">
+
+    <title>Echat</title>
+
+</head>
+<body class="soda">
+<div class="container mt-5">
+    <div class="row invisible">
+        <div class="col-xl-4"></div>
+        <div class="col-xl-4">
+            <h3 class="text-center">Welcome To Echat</h3>
+            <h6 class="text-center">Version：1.0.0</h6>
+            <div class="border rounded border-dark bg-white" id="chatarea"
+                 style="word-wrap: break-word;overflow-y: auto;">
+            </div>
+            <div class="input-group mb-3 bg-white">
+                <input autofocus="autofocus" class="form-control" id="message" maxlength="30"
+                       placeholder="Say something(within 30 chars)"
+                       type="text">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-info" id="send" type="button">Send</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4"></div>
+    </div>
+    <!-- Button trigger modal -->
+    <button class="btn btn-primary invisible" data-target="#exampleModalCenter" data-toggle="modal" id="modal"
+            type="button">
+        Launch demo modal
+    </button>
+
+    <!-- Modal -->
+    <div aria-hidden="true" aria-labelledby="exampleModalCenterTitle" class="modal fade" id="exampleModalCenter"
+         role="dialog" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Please enter your nickname </h5>
+                    <button aria-label="Close" class="close" data-dismiss="modal" type="button">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <input autofocus="autofocus" class="form-control" id="nickname" maxlength="12"
+                               placeholder="Within 12 chars"
+                               required type="text">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+                    <button class="btn btn-primary" data-dismiss="modal" id="confirm" type="button">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script src="js/soda.js"></script>
+
+<script type="text/javascript">
+    var serverAddress = "localhost";
+    var serverPort = 80;
+    var sid = null;
+    var nickname = null;
+    var icolor = null;
+    var ucolor = null;
+
+    function socket() {
+        //Determine whether the current browser supports WebSocket
+        if ('WebSocket' in window) {
+            var ws = new WebSocket("ws://" + serverAddress + ":" + serverPort + "/websocket");
+            //Connect failed callback
+            ws.onerror = function () {
+                $('#chatarea').append('<p class="text-center"><span class="bg-light">The server is busy, please try again</span></p>');
+            };
+            //Connect succeed callback
+            ws.onopen = function () {
+                $('#chatarea').append('<p class="text-center"><span class="bg-light text-success">Connect successfully</span></p>');
+            }
+            //Receive message callback
+            ws.onmessage = function (event) {
+                var spilt = event.data.toString().split("&");
+                if (spilt[1] == "s1") {
+                    $('#chatarea').append('<p class="text-center"><span class="bg-light text-secondary">' + spilt[0] + '</span></p>');
+                    if (sid == null) {
+                        sid = spilt[2];
+                    }
+                    if (nickname == null) {
+                        nickname = spilt[3];
+                    }
+                    if (icolor == null) {
+                        icolor = parseInt(spilt[4]) % 5;
+                        if (icolor == 0) {
+                            icolor = "primary";
+                        } else if (icolor == 1) {
+                            icolor = "success";
+                        } else if (icolor == 2) {
+                            icolor = "warning";
+                        } else if (icolor == 3) {
+                            icolor = "info";
+                        } else if (icolor == 4) {
+                            icolor = "danger";
+                        }
+                    }
+                    return;
+                } else if (spilt[1] == 's0') {
+                    $('#chatarea').append('<p class="text-center"><span class="bg-light">' + spilt[0] + '</span></p>');
+                    return;
+                }
+                if (sid == spilt[2]) {
+                    $('#chatarea').append('<p class="text-right">' + spilt[0]
+                        + '<span class="bg-' + icolor + '">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p>');
+                } else {
+                    ucolor = parseInt(spilt[4]) % 5;
+                    if (ucolor == 0) {
+                        ucolor = "primary";
+                    } else if (ucolor == 1) {
+                        ucolor = "success";
+                    } else if (ucolor == 2) {
+                        ucolor = "warning";
+                    } else if (ucolor == 3) {
+                        ucolor = "info";
+                    } else if (ucolor == 4) {
+                        ucolor = "secondary";
+                    }
+                    $('#chatarea').append('<p class="text-left">' + '<span class="bg-'
+                        + ucolor + '">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><b>' + spilt[3] + "：</b>" + spilt[0] + '</p>');
+                }
+                var scrollHeight = $('#chatarea').prop('scrollHeight');
+                $('#chatarea').scrollTop(scrollHeight);
+            }
+            //Connect closed callback
+            ws.onclose = function () {
+                $('#chatarea').append('<p class="text-center"><span class="bg-light">Exited, goodbye</span></p>');
+            }
+            //Close the websocket connection when the window is closed, preventing throwing exceptions.
+            window.onbeforeunload = function () {
+                ws.close();
+            }
+            $('body').keydown(function (e) {
+                if (e.keyCode === 13) {
+                    $('#send').trigger('click');
+                }
+            });
+
+            //Close connection
+            function closeWebSocket() {
+                ws.close();
+            }
+
+            //Send message
+            $('#send').click(function () {
+                if ($('#message').val() != '') {
+                    ws.send($('#message').val());
+                    $('#message').val('').focus();
+                }
+            });
+        } else {
+            alert('Your browser does not support WebSocket. Please change your browser and try again.');
+        }
+    }
+
+    $(function () {
+        $('#chatarea').css("height", document.body.clientHeight * 0.6);
+        window.onresize = function () {
+            $('#chatarea').css("height", document.body.clientHeight * 0.6);
+        }
+        $('#modal').trigger('click');
+        $('#confirm').click(function () {
+            if ($('#nickname').val() != "") {
+                $('.row').removeClass('invisible');
+                $.ajax({
+                    url: "/user",
+                    data: '{"nickname":"' + $('#nickname').val() + '"}',
+                    contentType: "application/json",
+                    type: "post"
+                });
+                socket();
+            }
+        });
+    });
+</script>
+</body>
+</html>
