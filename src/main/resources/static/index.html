@@ -56,8 +56,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button id="modal-close" class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
-                    <button id="confirm" class="btn btn-primary" type="button">Confirm</button>
+                    <button class="btn btn-secondary" data-dismiss="modal" id="modal-close" type="button">Close</button>
+                    <button class="btn btn-primary" id="confirm" type="button">Confirm</button>
                 </div>
             </div>
         </div>
@@ -100,18 +100,7 @@
                         nickname = spilt[3];
                     }
                     if (icolor == null) {
-                        icolor = parseInt(spilt[4]) % 5;
-                        if (icolor == 0) {
-                            icolor = "primary";
-                        } else if (icolor == 1) {
-                            icolor = "success";
-                        } else if (icolor == 2) {
-                            icolor = "warning";
-                        } else if (icolor == 3) {
-                            icolor = "info";
-                        } else if (icolor == 4) {
-                            icolor = "danger";
-                        }
+                        icolor = spilt[4];
                     }
                     return;
                 } else if (spilt[1] == 's0') {
@@ -120,21 +109,10 @@
                 }
                 if (sid == spilt[2]) {
                     $('#chatarea').append('<p class="text-right">' + spilt[0]
-                        + '<span class="bg-' + icolor + '">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p>');
+                        + '<span style="background-color: ' + icolor + '">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></p>');
                 } else {
-                    ucolor = parseInt(spilt[4]) % 5;
-                    if (ucolor == 0) {
-                        ucolor = "primary";
-                    } else if (ucolor == 1) {
-                        ucolor = "success";
-                    } else if (ucolor == 2) {
-                        ucolor = "warning";
-                    } else if (ucolor == 3) {
-                        ucolor = "info";
-                    } else if (ucolor == 4) {
-                        ucolor = "secondary";
-                    }
-                    $('#chatarea').append('<p class="text-left">' + '<span class="bg-'
+                    ucolor = spilt[4];
+                    $('#chatarea').append('<p class="text-left">' + '<span style="background-color: '
                         + ucolor + '">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><b>' + spilt[3] + "：</b>" + spilt[0] + '</p>');
                 }
                 var scrollHeight = $('#chatarea').prop('scrollHeight');
@@ -185,7 +163,7 @@
                     data: '{"nickname":"' + $('#nickname').val() + '"}',
                     contentType: "application/json",
                     type: "post",
-                    success : function (result) {
+                    success: function (result) {
                         if (result != "") {
                             $('#modal-close').trigger('click');
                             socket();

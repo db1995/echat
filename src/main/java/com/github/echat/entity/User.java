@@ -6,12 +6,11 @@ import java.util.HashMap;
  * @author db1995
  */
 public class User {
-    public static int color;
     /**
      * key: sessionId
      * value: color
      */
-    public static HashMap<String, Integer> map = new HashMap<>();
+    public static HashMap<String, String> map = new HashMap<>();
     private String nickname;
     private String sessionId;
 

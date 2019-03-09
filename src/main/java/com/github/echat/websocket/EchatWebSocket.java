@@ -1,6 +1,7 @@
 package com.github.echat.websocket;
 
 import com.github.echat.entity.User;
+import com.github.echat.util.EchatUtils;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -28,21 +29,6 @@ public class EchatWebSocket {
 
     private Session session;
     private String nickname;
-
-    /**
-     * Send message to all
-     *
-     * @param message
-     */
-    public static void sendToAll(String message) {
-        for (EchatWebSocket item : webSocketSet) {
-            try {
-                item.sendToOne(message, null);
-            } catch (IOException e) {
-                continue;
-            }
-        }
-    }
 
     public static synchronized int getOnlineCount() {
         return onlineCount;
@@ -82,11 +68,10 @@ public class EchatWebSocket {
         addOnlineCount();
         sessionIdList.add(session.getId());
         this.nickname = usernameList.get(sessionIdList.indexOf(session.getId()));
-        onMessage("[" + nickname + "] come in<br>" +
+        User.map.put(session.getId(), EchatUtils.generateRandomColor());
+        sendToAll("[" + nickname + "] come in<br>" +
                 "Current online: " + onlineCount + "&s1&" + session.getId() + "&"
-                + nickname + "&" + User.color, session);
-        User.map.put(session.getId(), User.color);
-        User.color++;
+                + nickname + "&" + User.map.get(session.getId()), session);
     }
 
     /**
@@ -96,7 +81,7 @@ public class EchatWebSocket {
     public void onClose(Session session) {
         webSocketSet.remove(this);
         subOnlineCount();
-        onMessage("[" + usernameList.get(sessionIdList.indexOf(session.getId())) + "] left<br>" +
+        sendToAll("[" + usernameList.get(sessionIdList.indexOf(session.getId())) + "] left<br>" +
                 "Current online: " + onlineCount + "&s0", session);
         usernameList.remove(sessionIdList.indexOf(session.getId()));
         sessionIdList.remove(session.getId());
@@ -108,7 +93,7 @@ public class EchatWebSocket {
      * @param message
      */
     @OnMessage
-    public void onMessage(String message, Session session) {
+    public void sendToAll(String message, Session session) {
         //群发消息
         for (EchatWebSocket item : webSocketSet) {
             try {
