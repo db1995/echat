@@ -3,6 +3,8 @@ package com.github.echat.util;
 import java.util.Random;
 
 /**
+ * Kinds of utility
+ *
  * @author db1995
  */
 public class EchatUtils {

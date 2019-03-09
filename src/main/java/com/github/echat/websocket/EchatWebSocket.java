@@ -11,7 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-//@ServerEndpoint("/websocket/{user}")
+/**
+ * Deal with different WebSocket events
+ *
+ * @author db1995
+ */
 @ServerEndpoint("/websocket")
 @Component
 public class EchatWebSocket {

@@ -3,6 +3,8 @@ package com.github.echat.entity;
 import java.util.HashMap;
 
 /**
+ * The entity of user
+ *
  * @author db1995
  */
 public class User {
