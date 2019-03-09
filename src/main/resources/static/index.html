@@ -56,8 +56,8 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
-                    <button class="btn btn-primary" data-dismiss="modal" id="confirm" type="button">Confirm</button>
+                    <button id="modal-close" class="btn btn-secondary" data-dismiss="modal" type="button">Close</button>
+                    <button id="confirm" class="btn btn-primary" type="button">Confirm</button>
                 </div>
             </div>
         </div>
@@ -184,9 +184,16 @@
                     url: "/user",
                     data: '{"nickname":"' + $('#nickname').val() + '"}',
                     contentType: "application/json",
-                    type: "post"
+                    type: "post",
+                    success : function (result) {
+                        if (result != "") {
+                            $('#modal-close').trigger('click');
+                            socket();
+                        } else {
+                            alert("The username is has existed, please enter another one")
+                        }
+                    }
                 });
-                socket();
             }
         });
     });
