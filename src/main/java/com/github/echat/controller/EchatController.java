@@ -19,7 +19,7 @@ public class EchatController {
      * @param user
      */
     @PostMapping("/user")
-    public String socket(@RequestBody User user) {
+    public String register(@RequestBody User user) {
         //Not allow existed username
         if (!EchatWebSocket.usernameList.contains(user.getNickname())) {
             EchatWebSocket.usernameList.add(user.getNickname());
