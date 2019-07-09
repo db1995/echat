@@ -1,38 +1,36 @@
 package com.github.echat;
 
-import com.github.echat.EchatSingleton;
-import com.github.echat.Observable;
-import com.github.echat.Observer;
-import org.springframework.stereotype.Component;
-
-import javax.websocket.OnOpen;
 import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * @author db1995
  */
-public class Chatter implements Observable, Observer {
+public class Chatter implements Observer {
     private Session session;
+    private String nickName;
 
-    @Override
-    public void attachObserver(Observer observer) {
-
-    }
-
-    @Override
-    public void detachObserver(Observer observer) {
-
-    }
-
-    @Override
-    public void notifyAllObservers() {
-
+    public Chatter(Session session) {
+        this.session = session;
     }
 
     @Override
     public void update() {
 
+    }
+
+    public Session getSession() {
+        return session;
+    }
+
+    public void setSession(Session session) {
+        this.session = session;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
     }
 }

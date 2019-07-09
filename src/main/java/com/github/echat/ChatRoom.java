@@ -1,17 +1,22 @@
 package com.github.echat;
 
+import javax.websocket.Session;
+import java.io.IOException;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * @author db1995
  */
 public class ChatRoom implements Observable {
-    public static CopyOnWriteArraySet<Chatter> observerSet = new CopyOnWriteArraySet<>();
-    public static int ONLINE_CHATTER_COUNT = 0;
+    private CopyOnWriteArraySet<Observer> observerSet = new CopyOnWriteArraySet<>();
+    private HashMap<String, Chatter> chatterMap = new HashMap<>();
+
+    private static int ONLINE_CHATTER_COUNT = 0;
 
     @Override
     public void attachObserver(Observer observer) {
-
+        observerSet.add(observer);
     }
 
     @Override
@@ -20,19 +25,30 @@ public class ChatRoom implements Observable {
     }
 
     @Override
-    public void notifyAllObservers() {
-
+    public void notifyAllObservers(Object object) {
+        Iterator<Map.Entry<String, Chatter>> iterator = chatterMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            try {
+                iterator.next().getValue().getSession().getBasicRemote().sendText("");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    public static synchronized int getOnlineChatterCount() {
+    public HashMap<String, Chatter> getChatterMap() {
+        return chatterMap;
+    }
+
+    public synchronized int getOnlineChatterCount() {
         return ChatRoom.ONLINE_CHATTER_COUNT;
     }
 
-    public static synchronized void addOnlineChatterCount() {
+    public synchronized void addOnlineChatterCount() {
         ChatRoom.ONLINE_CHATTER_COUNT++;
     }
 
-    public static synchronized void subOnlineChatterCount() {
+    public synchronized void subOnlineChatterCount() {
         ChatRoom.ONLINE_CHATTER_COUNT--;
     }
 }

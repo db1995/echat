@@ -1,10 +1,12 @@
 package com.github.echat;
 
+import com.github.echat.entity.User;
 import org.springframework.stereotype.Component;
 
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
+import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
+import java.io.IOException;
+import java.util.HashSet;
 
 /**
  * @author db1995
@@ -12,14 +14,36 @@ import javax.websocket.server.ServerEndpoint;
 @Component
 @ServerEndpoint("/chat")
 public class EchatWebSocket {
+    private ChatRoom chatRoom = new ChatRoom();
+
     @OnOpen
     public synchronized void onOpen(Session session) {
+        Chatter chatter = new Chatter(session);
+        chatRoom.attachObserver(chatter);
+        chatRoom.addOnlineChatterCount();
+        chatRoom.getChatterMap().put(session.getId(), chatter);
+    }
+
+    public void sendToOne(String message, Session session) throws IOException {
         try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
+            session.getBasicRemote().sendObject(message);
+        } catch (EncodeException e) {
             e.printStackTrace();
         }
-        Chatter chatter = new Chatter();
-        chatter.attachObserver(chatter);
+    }
+
+    @OnMessage
+    public void sendToAll(String message) {
+        chatRoom.notifyAllObservers(message);
+    }
+
+    @OnClose
+    public void onClose(Session session) {
+
+    }
+
+    @OnError
+    public void onError(Session session, Throwable error) {
+        error.printStackTrace();
     }
 }

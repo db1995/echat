@@ -6,5 +6,5 @@ package com.github.echat;
 public interface Observable {
     void attachObserver(Observer observer);
     void detachObserver(Observer observer);
-    void notifyAllObservers();
+    void notifyAllObservers(Object object);
 }
