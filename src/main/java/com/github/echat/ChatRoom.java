@@ -26,14 +26,13 @@ public class ChatRoom implements Observable {
 
     @Override
     public void notifyAllObservers(Object object) {
-        Iterator<Map.Entry<String, Chatter>> iterator = chatterMap.entrySet().iterator();
-        while (iterator.hasNext()) {
+        chatterMap.forEach((k, v) -> {
             try {
-                iterator.next().getValue().getSession().getBasicRemote().sendText("");
+                v.getSession().getBasicRemote().sendText("");
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+        });
     }
 
     public HashMap<String, Chatter> getChatterMap() {
