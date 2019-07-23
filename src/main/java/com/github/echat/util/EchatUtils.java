@@ -8,7 +8,7 @@ import java.util.Random;
  * @author db1995
  */
 public class EchatUtils {
-    public static String generateRgbColor() {
+    public static String generateRGB() {
         Random random = new Random();
         int a = random.nextInt(256);
         int b = random.nextInt(256);

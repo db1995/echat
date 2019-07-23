@@ -72,7 +72,7 @@ public class EchatWebSocket {
         addOnlineCount();
         sessionIdList.add(session.getId());
         this.nickname = usernameList.get(sessionIdList.indexOf(session.getId()));
-        User.map.put(session.getId(), EchatUtils.generateRgbColor());
+        User.map.put(session.getId(), EchatUtils.generateRGB());
         sendToAll("[" + nickname + "] come in<br>" +
                 "Current online: " + onlineCount + "&s1&" + session.getId() + "&"
                 + nickname + "&" + User.map.get(session.getId()), session);
